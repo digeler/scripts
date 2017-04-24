@@ -1,0 +1,32 @@
+ ##############################
+ # Get Auth URI
+ ##############################
+
+ $uri = $KeyVault.VaultUri + "/keys"
+ $headers = @{}
+
+ $response = try { Invoke-RestMethod -Method GET -Uri $uri -Headers $headers } catch { $_.Exception.Response }
+
+ $authHeader = $response.Headers["www-authenticate"]
+ $authUri = [regex]::match($authHeader, 'authorization="(.*?)"').Groups[1].Value
+ $AadClientId =  "f0e3b718-fb05-46a2-9f99-d2beebe72f2b"
+ $AadClientSecret = "Cloud2016"
+ Write-Host "Got Auth URI successfully"
+ly
+
+ ##############################
+ # Get Auth Token
+ ##############################
+
+ $uri = $authUri + "/oauth2/token"
+ $body = "grant_type=client_credentials"
+ $body += "&client_id=" + $AadClientId
+ $body += "&client_secret=" + [Uri]::EscapeDataString($AadClientSecret)
+ $body += "&resource=" + [Uri]::EscapeDataString("https://vault.azure.net")
+ $headers = @{}
+
+ $response = Invoke-RestMethod -Method POST -Uri $uri -Headers $headers -Body $body
+
+ $access_token = $response.access_token
+
+ Write-Host "Got Auth Token successfully"
