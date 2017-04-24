@@ -1,0 +1,23 @@
+Create disk from snap  ./az  disk create -g sql2 -n myDisk3 --source "/subscriptions/928f4e7e-2c28-4063-a56e-6f1e6f2bb73c/resourceGroups/sql1/providers/Microsoft.Compute/snapshots/checksnap1"
+PS:
+$snapshot = Get-AzureRmSnapshot -SnapshotName checksnap1 -ResourceGroupName sql1
+ $location = "north europe"
+$vmSize = 'Standard_D1_V2'
+$managedDiskType = 'standard'
+$managedDiskCreateOption = 'Copy'
+$diskName = "myos"
+$diskCreateOption = 'Attach'
+$vm = New-AzureRmVMConfig -VMName testsnaaa -VMSize $vmSize
+$vm = Add-AzureRmVMNetworkInterface -VM $vm -Id /subscriptions/928f4e7e-2c28-4063-a56e-6f1e6f2bb73c/resourceGroups/sql1/providers/Microsoft.Network/networkInterfaces/snap
+$diskConfig = New-AzureRmDiskConfig -AccountType $managedDiskType -Location $location -CreateOption $managedDiskCreateOption -SourceResourceId $snapshot.Id 
+$osDisk = New-AzureRmDisk -DiskName $diskName -Disk $diskConfig -ResourceGroupName sql1 
+$vm = Set-AzureRmVMOSDisk -VM $vm -Name $diskName -ManagedDiskId $osDisk.Id -CreateOption $diskCreateOption -windows -Caching ReadWrite
+New-AzureRmVM -ResourceGroupName $resourceGroupName -Location $location -VM $vm
+
++ DATA:
+
+$DataDiskSnapshot = Get-AzureRmSnapshot -ResourceGroupName $rgName -SnapshotName $datadiskSnapshotName
+$Datadiskconfig = New-AzureRmDiskConfig -AccountType StandardLRS -CreateOption Copy -SourceResourceId $DataDisksnapshot.Id -Location $location -DiskSizeGB 100
+$dataDisk1 = New-AzureRmDisk -Disk $Datadiskconfig -ResourceGroupName $rgName -DiskName $datadiskName -Verbose 
+ 
+***DiskName = must be the same as the managed disk.
