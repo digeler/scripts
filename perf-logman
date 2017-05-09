@@ -1,0 +1,4 @@
+:: ExtensiveLOG: noncircular cumulative log, max 300MB, every 5 minutes
+
+Logman.exe create counter ExtensiveLOG -o "c:\perflogs\ExtensiveLOG.blg" -v mmddhhmm -max 300 -c "\LogicalDisk(*)\*" "\Memory\*" "\.NET CLR Memory(*)\*" "\Cache\*" "\Network Interface(*)\*" "\Paging File(*)\*" "\PhysicalDisk(*)\*" "\Processor(*)\*" "\Processor Information(*)\*" "\Process(*)\*" "\Redirector\*" "\Server\*" "\System\*" "\Server Work Queues(*)\*" "\Terminal Services\*" -si 00:05:00
+
