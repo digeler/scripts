@@ -32,5 +32,4 @@ sudo ntpd -gq
 sudo service ntp start
 sudo systemctl enable ntp
 echo am done
-echo checking for timedatectl
-timedatectl
+
