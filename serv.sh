@@ -13,7 +13,7 @@ else
    echo restarted again
 
 fi
-"sh -c 'until ping -c1 leader.mesos;do echo waiting for leader.mesos;sleep 15;done;echo leader.mesos up'"
+sh -c 'until ping -c1 leader.mesos;do echo waiting for leader.mesos;sleep 15;done;echo leader.mesos up'
 
 echo ***************working on hv clock now 
 
