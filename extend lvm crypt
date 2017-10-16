@@ -1,0 +1,97 @@
+•             Make a full backup of your system using the azure backup.
+•             Add a disk 
+•             Format as lvm :
+Fdisk /dev/sde 
+Use t and L for lvm use 8e
+•             Extend the volume group vgextend vg01 /dev/sde1
+•             Extend the lv : lvextend -L +4G /dev/vg01/vol01
+Do a file check : fsck.ext4 -C 0 -f /dev/mapper/ 88e68bee-e671-43dd-a04e-e42ba4cd3070
+88e68bee-e671-43dd-a04e-e42ba4cd3070 -is taken from here :
+Lsblk :
+lsblk
+NAME                                       MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINT
+fd0                                          2:0    1     4K  0 disk  
+sda                                          8:0    0    30G  0 disk  
+├─sda1                                       8:1    0   500M  0 part  /boot
+└─sda2                                       8:2    0  29.5G  0 part  /
+sdb                                          8:16   0 382.7G  0 disk  
+└─sdb1                                       8:17   0 382.7G  0 part  /mnt/resource
+sdc                                          8:32   0    48M  0 disk  
+└─sdc1                                       8:33   0    47M  0 part  /mnt/azure_bek_disk
+sdd                                          8:48   0     5G  0 disk  
+└─sdd1                                       8:49   0     5G  0 part  
+  └─vg01-vol01                             253:0    0    17G  0 lvm   
+    └─88e68bee-e671-43dd-a04e-e42ba4cd3070 253:1    0    17G  0 crypt /home/dinor/data
+sde                                          8:64   0     5G  0 disk  
+└─sde1                                       8:65   0     5G  0 part  
+•             Close the luks device (make sure you umount /home/dinor/data before)
+Cryptsetup luksClose 88e68bee-e671-43dd-a04e-e42ba4cd3070
+•             Reboot from inside the vm 
+•             Resize the filesystem :
+resize2fs /dev/mapper/88e68bee-e671-43dd-a04e-e42ba4cd3070
+
+you should see :
+resize2fs 1.42.9 (28-Dec-2013)
+Filesystem at /dev/mapper/88e68bee-e671-43dd-a04e-e42ba4cd3070 is mounted on /home/dinor/data; on-line resizing required
+old_desc_blocks = 2, new_desc_blocks = 3
+The filesystem on /dev/mapper/88e68bee-e671-43dd-a04e-e42ba4cd3070 is now 4456448 blocks long.
+
+
+Final results :
+
+Before :
+[root@testcentos dinor]# df -h
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda2        30G  1.4G   29G   5% /
+devtmpfs         28G     0   28G   0% /dev
+tmpfs            28G     0   28G   0% /dev/shm
+tmpfs            28G  8.4M   28G   1% /run
+tmpfs            28G     0   28G   0% /sys/fs/cgroup
+/dev/sda1       497M   62M  436M  13% /boot
+/dev/sdb1       377G   69M  358G   1% /mnt/resource
+/dev/sdc1        43M  1.5K   43M   1% /mnt/azure_bek_disk
+tmpfs           5.6G     0  5.6G   0% /run/user/1000
+/dev/dm-1        13G   41M   12G   1% /home/dinor/data
+
+After :
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda2        30G  1.4G   29G   5% /
+devtmpfs         28G     0   28G   0% /dev
+tmpfs            28G     0   28G   0% /dev/shm
+tmpfs            28G  8.4M   28G   1% /run
+tmpfs            28G     0   28G   0% /sys/fs/cgroup
+/dev/sda1       497M   62M  436M  13% /boot
+/dev/sdb1       377G   69M  358G   1% /mnt/resource
+/dev/sdc1        43M  1.5K   43M   1% /mnt/azure_bek_disk
+tmpfs           5.6G     0  5.6G   0% /run/user/1000
+/dev/dm-1        17G   44M   16G   1% /home/dinor/data
+
+
+Lsblk :
+
+[root@testcentos data]# lsblk
+NAME                                       MAJ:MIN RM   SIZE RO TYPE  MOUNTPOINT
+fd0                                          2:0    1     4K  0 disk  
+sda                                          8:0    0    30G  0 disk  
+├─sda1                                       8:1    0   500M  0 part  /boot
+└─sda2                                       8:2    0  29.5G  0 part  /
+sdb                                          8:16   0 382.7G  0 disk  
+└─sdb1                                       8:17   0 382.7G  0 part  /mnt/resource
+sdc                                          8:32   0    48M  0 disk  
+└─sdc1                                       8:33   0    47M  0 part  /mnt/azure_bek_disk
+sdd                                          8:48   0     5G  0 disk  
+└─sdd1                                       8:49   0     5G  0 part  
+  └─vg01-vol01                             253:0    0    17G  0 lvm   
+    └─88e68bee-e671-43dd-a04e-e42ba4cd3070 253:1    0    17G  0 crypt /home/dinor/data
+sde                                          8:64   0     5G  0 disk  
+└─sde1                                       8:65   0     5G  0 part  
+  └─vg01-vol01                             253:0    0    17G  0 lvm   
+    └─88e68bee-e671-43dd-a04e-e42ba4cd3070 253:1    0    17G  0 crypt /home/dinor/data
+sdf                                          8:80   0     5G  0 disk  
+└─sdf1                                       8:81   0     5G  0 part  
+  └─vg01-vol01                             253:0    0    17G  0 lvm   
+    └─88e68bee-e671-43dd-a04e-e42ba4cd3070 253:1    0    17G  0 crypt /home/dinor/data
+sdg                                          8:96   0     5G  0 disk  
+└─sdg1                                       8:97   0     5G  0 part  
+  └─vg01-vol01                             253:0    0    17G  0 lvm   
+    └─88e68bee-e671-43dd-a04e-e42ba4cd3070 253:1    0    17G  0 crypt /home/dinor/data
