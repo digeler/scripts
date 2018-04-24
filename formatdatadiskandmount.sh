@@ -2,7 +2,7 @@
 
 # An set of disks to ignore from partitioning and formatting
 BLACKLIST="/dev/sda|/dev/sdb"
-mkdir /var/gitlab
+
 # Base directory to hold the data* files
 DATA_BASE="/var"
 
