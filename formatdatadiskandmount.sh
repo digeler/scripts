@@ -4,7 +4,7 @@
 BLACKLIST="/dev/sda|/dev/sdb"
 mkdir /var/gitlab
 # Base directory to hold the data* files
-DATA_BASE="/var/gitlab"
+DATA_BASE="/var"
 
 usage() {
     echo "Usage: $(basename $0) <new disk>"
@@ -30,7 +30,7 @@ get_next_mountpoint() {
     DIRS=($(ls -1d ${DATA_BASE}/data* 2>&1| sort --version-sort))
     if [ -z "${DIRS[0]}" ];
     then
-        echo "${DATA_BASE}/data1"
+        echo "${DATA_BASE}/gitlab"
         return
     else
         IDX=$(echo "${DIRS[${#DIRS[@]}-1]}"|tr -d "[a-zA-Z/]" )
