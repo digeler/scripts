@@ -27,7 +27,7 @@ scan_for_new_disks() {
 }
 
 get_next_mountpoint() {
-    DIRS=($(ls -1d ${DATA_BASE}/data* 2>&1| sort --version-sort))
+    DIRS=($(ls -1d ${DATA_BASE}/gitlab* 2>&1| sort --version-sort))
     if [ -z "${DIRS[0]}" ];
     then
         echo "${DATA_BASE}/gitlab"
@@ -35,7 +35,7 @@ get_next_mountpoint() {
     else
         IDX=$(echo "${DIRS[${#DIRS[@]}-1]}"|tr -d "[a-zA-Z/]" )
         IDX=$(( ${IDX} + 1 ))
-        echo "${DATA_BASE}/data${IDX}"
+        echo "${DATA_BASE}/gitlab${IDX}"
     fi
 }
 
