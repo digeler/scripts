@@ -2,8 +2,9 @@
 
 # An set of disks to ignore from partitioning and formatting
 BLACKLIST="/dev/sda|/dev/sdb"
+mkdir /var/gitlab
 # Base directory to hold the data* files
-DATA_BASE="/media"
+DATA_BASE="/var/gitlab"
 
 usage() {
     echo "Usage: $(basename $0) <new disk>"
